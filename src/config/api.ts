@@ -47,4 +47,11 @@ export const TOOLS_CONFIG = {
       description: "Get registered time entries from a workspace",
     },
   },
+  tags: {
+    list: {
+      name: "get-tags",
+      description:
+        "Get available tags from a workspace that can be associated with time entries",
+    },
+  },
 };

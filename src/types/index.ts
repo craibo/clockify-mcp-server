@@ -7,12 +7,15 @@ import {
   ResourceTemplate,
 } from "@modelcontextprotocol/sdk/server/mcp";
 import { FindProjectSchema } from "../validation/projects/find-project-schema";
+import { FindTagsSchema } from "../validation/tags/find-tags-schema";
 
 export type TCreateEntrySchema = z.infer<typeof CreateEntrySchema>;
 
 export type TFindEntrySchema = z.infer<typeof FindEntrySchema>;
 
 export type TFindProjectSchema = z.infer<typeof FindProjectSchema>;
+
+export type TFindTagsSchema = z.infer<typeof FindTagsSchema>;
 
 export interface ClockifyWorkspace {
   id: string;

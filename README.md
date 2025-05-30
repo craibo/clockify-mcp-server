@@ -1,7 +1,5 @@
 # Clockify MCP Server
 
-[![smithery badge](https://smithery.ai/badge/@https-eduardo/clockify-mcp-server)](https://smithery.ai/server/@https-eduardo/clockify-mcp-server)
-
 This MCP Server integrates with AI Tools to manage your time entries in Clockify, so you can register your time entries just sending an prompt to LLM.
 
 ## Next implementations
@@ -11,14 +9,6 @@ This MCP Server integrates with AI Tools to manage your time entries in Clockify
 - Get another user time entries tool
 
 ## Using in Claude Desktop
-
-### Installing via Smithery
-
-To install clockify-mcp-server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@https-eduardo/clockify-mcp-server):
-
-```bash
-npx -y @smithery/cli install @https-eduardo/clockify-mcp-server --client claude
-```
 
 ### Installing Manually
 First, install ts-node globally
