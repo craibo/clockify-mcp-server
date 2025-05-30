@@ -54,4 +54,11 @@ export const TOOLS_CONFIG = {
         "Get available tags from a workspace that can be associated with time entries",
     },
   },
+  tasks: {
+    list: {
+      name: "get-tasks",
+      description:
+        "Get tasks for a project that can be associated with time entries",
+    },
+  },
 };

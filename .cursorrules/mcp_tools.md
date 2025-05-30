@@ -48,12 +48,75 @@ This document contains information about the Model Context Protocol (MCP) tools 
   - `workspaceId` (required): The ID of the workspace to get tags from
 - **Returns**: List of tags with their IDs and names
 
+### 7. `mcp_clockify-time-entries_get-tasks`
+- **Description**: Get tasks for a project that can be associated with time entries
+- **Parameters**:
+  - `workspaceId` (required): The ID of the workspace that contains the project
+  - `projectId` (required): The ID of the project to get tasks from
+- **Returns**: List of tasks with their IDs, names, status, assignee IDs, estimates, and durations
+
 ## Configuration
 
 The Clockify MCP Server requires the following environment variables:
 - `CLOCKIFY_API_URL`: Base URL for the Clockify API (default: https://api.clockify.me/api/v1)
 - `CLOCKIFY_API_TOKEN`: Your Clockify API token for authentication
 
-## Usage Example
+## Usage Examples
 
-To use these tools, you need to provide the necessary parameters as defined in their schemas. 
+### Example 1: Creating a Time Entry
+
+```javascript
+// First, get available workspaces
+const workspaces = await mcp_clockify-time-entries_get-workspaces({random_string: "dummy"});
+const workspaceId = workspaces[0].id;
+
+// Then, create a time entry
+const result = await mcp_clockify-time-entries_create-time-entry({
+  workspaceId: workspaceId,
+  description: "Working on documentation",
+  start: "2023-06-01T09:00:00Z",
+  end: "2023-06-01T10:30:00Z",
+  billable: true
+});
+```
+
+### Example 2: Getting Time Entries with Project
+
+```javascript
+// Get current user
+const user = await mcp_clockify-time-entries_get-current-user({random_string: "dummy"});
+const userId = user.id;
+
+// Get projects in workspace
+const projects = await mcp_clockify-time-entries_get-projects({workspaceId: "workspace123"});
+const projectId = projects[0].id;
+
+// Get time entries for user and project
+const entries = await mcp_clockify-time-entries_list-time-entries({
+  workspaceId: "workspace123",
+  userId: userId,
+  project: projectId,
+  start: "2023-06-01T00:00:00Z",
+  end: "2023-06-30T23:59:59Z"
+});
+```
+
+### Example 3: Working with Tasks
+
+```javascript
+// Get tasks for a project
+const tasks = await mcp_clockify-time-entries_get-tasks({
+  workspaceId: "workspace123",
+  projectId: "project456"
+});
+
+// Create a time entry with a task
+const result = await mcp_clockify-time-entries_create-time-entry({
+  workspaceId: "workspace123",
+  description: "Implementing feature",
+  start: "2023-06-01T13:00:00Z",
+  end: "2023-06-01T15:30:00Z",
+  projectId: "project456",
+  taskId: tasks[0].id
+});
+``` 

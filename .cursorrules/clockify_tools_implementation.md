@@ -111,6 +111,7 @@ export const actionTool: McpToolConfig = {
     const data = response.data.map((item: any) => ({
       id: item.id,
       name: item.name,
+      // Include other relevant fields
     }));
 
     return {
@@ -174,22 +175,120 @@ return {
 };
 ```
 
+## Error Handling
+
+Proper error handling is essential for tools to provide meaningful feedback:
+
+```typescript
+try {
+  const response = await service.fetchData(param);
+  // Process response
+  return {
+    content: [{ type: "text", text: JSON.stringify(data) }],
+  };
+} catch (error) {
+  console.error("Error in tool:", error);
+  throw new Error(`Failed to process request: ${error.message}`);
+}
+```
+
+## Parameter Validation
+
+Always validate required parameters before making API calls:
+
+```typescript
+if (!workspaceId) {
+  throw new Error("Workspace ID is required");
+}
+
+if (!projectId) {
+  throw new Error("Project ID is required");
+}
+```
+
 ## Best Practices
 
 1. **Error Handling** - Always validate required parameters and handle API errors
 2. **Type Safety** - Use TypeScript types and Zod validation for parameters
 3. **Consistent Naming** - Follow the existing naming conventions
 4. **Documentation** - Update the `.cursorrules/mcp_tools.md` file with the new tool's documentation
+5. **Data Transformation** - Process API responses to return only relevant data
+6. **Testing** - Test your tool with various inputs before deployment
 
-## Example: Tags Tool Implementation
+## Example: Tasks Tool Implementation
 
-The implementation of the `get-tags` tool demonstrates all these steps:
+Here's a complete example of the `get-tasks` tool implementation:
 
-1. Added configuration in `src/config/api.ts`
-2. Created `src/clockify-sdk/tags.ts` service
-3. Created `src/validation/tags/find-tags-schema.ts` schema
-4. Added `TFindTagsSchema` type to `src/types/index.ts`
-5. Implemented `findTagsTool` in `src/tools/tags.ts`
-6. Registered the tool in `src/index.ts`
+```typescript
+// src/tools/tasks.ts
+import { tasksService } from "../clockify-sdk/tasks";
+import { TOOLS_CONFIG } from "../config/api";
+import { z } from "zod";
+import { McpResponse, McpToolConfig, TFindTasksSchema } from "../types";
 
-This pattern can be followed for implementing any new tool in the Clockify MCP Server. 
+export const findTasksTool: McpToolConfig = {
+  name: TOOLS_CONFIG.tasks.list.name,
+  description: TOOLS_CONFIG.tasks.list.description,
+  parameters: {
+    workspaceId: z
+      .string()
+      .describe(
+        "The ID of the workspace that contains the project"
+      ),
+    projectId: z
+      .string()
+      .describe(
+        "The ID of the project to get tasks from"
+      ),
+  },
+  handler: async ({
+    workspaceId,
+    projectId,
+  }: TFindTasksSchema): Promise<McpResponse> => {
+    if (!workspaceId || !projectId)
+      throw new Error("Workspace ID and Project ID are required to fetch tasks");
+
+    const response = await tasksService.fetchByProject(workspaceId, projectId);
+    const tasks = response.data.map((task: any) => ({
+      name: task.name,
+      id: task.id,
+      status: task.status,
+      assigneeIds: task.assigneeIds,
+      estimate: task.estimate,
+      duration: task.duration,
+    }));
+
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(tasks),
+        },
+      ],
+    };
+  },
+};
+```
+
+This pattern can be followed for implementing any new tool in the Clockify MCP Server.
+
+## Updating Existing Tools
+
+When updating an existing tool:
+
+1. Maintain backward compatibility when possible
+2. Update the documentation in `.cursorrules/mcp_tools.md`
+3. Test the changes thoroughly before deployment
+
+## Naming Conventions
+
+Follow these naming conventions for consistency:
+
+1. Tool configuration: `feature.action` (e.g., `tasks.list`)
+2. Tool name: `action-name` (e.g., `get-tasks`)
+3. Tool function: `actionNameTool` (e.g., `findTasksTool`)
+4. Service function: `actionName` (e.g., `fetchByProject`)
+5. Schema: `ActionNameSchema` (e.g., `FindTasksSchema`)
+6. Type: `TActionNameSchema` (e.g., `TFindTasksSchema`)
+
+By following these guidelines, you'll ensure your tools integrate seamlessly with the Clockify MCP Server architecture. 

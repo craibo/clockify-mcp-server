@@ -5,6 +5,7 @@ import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
 
 export const TEST_WORKSPACE_ID = process.env.TEST_WORKSPACE_ID;
 export const TEST_USER_ID = process.env.TEST_USER_ID;
+export const TEST_PROJECT_ID = process.env.TEST_PROJECT_ID;
 
 export async function createMcpClient() {
   const transport = new StdioClientTransport({

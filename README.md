@@ -8,6 +8,16 @@ This MCP Server integrates with AI Tools to manage your time entries in Clockify
 - Edit time entry tool
 - Get another user time entries tool
 
+## Testing
+
+The project includes a test suite to validate the functionality of the MCP server tools. To run the tests:
+
+```bash
+npm test
+```
+
+For more details about testing and configuration, see [test/README.md](test/README.md).
+
 ## Using in Claude Desktop
 
 ### Installing Manually

@@ -8,6 +8,7 @@ import { findProjectTool } from "./tools/projects";
 import { getCurrentUserTool } from "./tools/users";
 import { findWorkspacesTool } from "./tools/workspaces";
 import { findTagsTool } from "./tools/tags";
+import { findTasksTool } from "./tools/tasks";
 
 const server = new McpServer(SERVER_CONFIG);
 
@@ -49,6 +50,13 @@ server.tool(
   findTagsTool.description,
   findTagsTool.parameters,
   findTagsTool.handler
+);
+
+server.tool(
+  findTasksTool.name,
+  findTasksTool.description,
+  findTasksTool.parameters,
+  findTasksTool.handler
 );
 
 const transport = new StdioServerTransport();
