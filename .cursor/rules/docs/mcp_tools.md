@@ -28,6 +28,8 @@ This document contains information about the Model Context Protocol (MCP) tools 
   - `start` (required): The start time of the time entry (date-time format)
   - `end` (required): The end time of the time entry (date-time format)
   - `projectId` (optional): The ID of the project associated with this time entry
+  - `taskId` (optional): The ID of the task associated with this time entry
+  - `tagIds` (optional): The IDs of tags to associate with this time entry (array of strings)
   - `billable` (optional, default: true): Whether the task is billable or not
 - **Returns**: Confirmation message with the created entry ID and description
 
@@ -101,7 +103,7 @@ const entries = await mcp_clockify-time-entries_list-time-entries({
 });
 ```
 
-### Example 3: Working with Tasks
+### Example 3: Working with Tasks and Tags
 
 ```javascript
 // Get tasks for a project
@@ -110,13 +112,19 @@ const tasks = await mcp_clockify-time-entries_get-tasks({
   projectId: "project456"
 });
 
-// Create a time entry with a task
+// Get available tags
+const tags = await mcp_clockify-time-entries_get-tags({
+  workspaceId: "workspace123"
+});
+
+// Create a time entry with a task and tags
 const result = await mcp_clockify-time-entries_create-time-entry({
   workspaceId: "workspace123",
   description: "Implementing feature",
   start: "2023-06-01T13:00:00Z",
   end: "2023-06-01T15:30:00Z",
   projectId: "project456",
-  taskId: tasks[0].id
+  taskId: tasks[0].id,
+  tagIds: [tags[0].id, tags[1].id]
 });
 ``` 

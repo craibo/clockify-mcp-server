@@ -22,6 +22,14 @@ export const createEntryTool: McpToolConfig = {
       .string()
       .optional()
       .describe("The id of the project associated with this time entry"),
+    taskId: z
+      .string()
+      .optional()
+      .describe("The id of the task associated with this time entry"),
+    tagIds: z
+      .array(z.string())
+      .optional()
+      .describe("The ids of tags to associate with this time entry"),
   },
   handler: async (params: TCreateEntrySchema): Promise<McpResponse> => {
     try {
