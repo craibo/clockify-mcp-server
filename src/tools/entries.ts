@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { TOOLS_CONFIG } from "../config/api";
 import { entriesService } from "../clockify-sdk/entries";
-import { McpResponse, McpToolConfig, TCreateEntrySchema, TFindEntrySchema } from "../types";
+import { McpResponse, McpToolConfig, TCreateEntrySchema, TFindEntrySchema, TUpdateEntrySchema } from "../types";
 
 export const createEntryTool: McpToolConfig = {
   name: TOOLS_CONFIG.entries.create.name,
@@ -102,6 +102,69 @@ export const listEntriesTool: McpToolConfig = {
       };
     } catch (error: any) {
       throw new Error(`Failed to retrieve entries: ${error.message}`);
+    }
+  },
+};
+
+export const updateEntryTool: McpToolConfig = {
+  name: TOOLS_CONFIG.entries.update.name,
+  description: TOOLS_CONFIG.entries.update.description,
+  parameters: {
+    workspaceId: z
+      .string()
+      .describe("The id of the workspace containing the time entry"),
+    entryId: z
+      .string()
+      .describe("The id of the time entry to update"),
+    billable: z
+      .boolean()
+      .describe("If the task is billable or not")
+      .optional(),
+    description: z
+      .string()
+      .describe("The description of the time entry")
+      .optional(),
+    start: z
+      .coerce.date()
+      .describe("The start of the time entry")
+      .optional(),
+    end: z
+      .coerce.date()
+      .describe("The end of the time entry")
+      .optional(),
+    projectId: z
+      .string()
+      .optional()
+      .describe("The id of the project associated with this time entry"),
+    taskId: z
+      .string()
+      .optional()
+      .describe("The id of the task associated with this time entry"),
+    tagIds: z
+      .array(z.string())
+      .optional()
+      .describe("The ids of tags to associate with this time entry"),
+  },
+  handler: async (params: TUpdateEntrySchema): Promise<McpResponse> => {
+    try {
+      if (!params.workspaceId || !params.entryId) {
+        throw new Error("Workspace ID and Entry ID are required to update a time entry");
+      }
+
+      const result = await entriesService.update(params);
+
+      const entryInfo = `Registro atualizado com sucesso. ID: ${result.data.id} Nome: ${result.data.description}`;
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: entryInfo,
+          },
+        ],
+      };
+    } catch (error: any) {
+      throw new Error(`Failed to update entry: ${error.message}`);
     }
   },
 };

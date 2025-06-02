@@ -1,6 +1,6 @@
 import { AxiosInstance } from "axios";
 import { api } from "../config/api";
-import { TCreateEntrySchema, TFindEntrySchema } from "../types";
+import { TCreateEntrySchema, TFindEntrySchema, TUpdateEntrySchema } from "../types";
 import { URLSearchParams } from "node:url";
 
 function EntriesService(api: AxiosInstance) {
@@ -11,6 +11,16 @@ function EntriesService(api: AxiosInstance) {
     };
 
     return api.post(`workspaces/${entry.workspaceId}/time-entries`, body);
+  }
+
+  async function update(entry: TUpdateEntrySchema) {
+    const body = {
+      ...entry,
+      workspaceId: undefined,
+      entryId: undefined,
+    };
+
+    return api.put(`workspaces/${entry.workspaceId}/time-entries/${entry.entryId}`, body);
   }
 
   async function find(filters: TFindEntrySchema) {
@@ -33,7 +43,7 @@ function EntriesService(api: AxiosInstance) {
     );
   }
 
-  return { create, find };
+  return { create, update, find };
 }
 
 export const entriesService = EntriesService(api);

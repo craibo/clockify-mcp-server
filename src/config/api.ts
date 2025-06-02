@@ -46,6 +46,10 @@ export const TOOLS_CONFIG = {
       name: "list-time-entries",
       description: "Get registered time entries from a workspace",
     },
+    update: {
+      name: "update-time-entry",
+      description: "Update an existing time entry in a workspace",
+    },
   },
   tags: {
     list: {

@@ -33,7 +33,21 @@ This document contains information about the Model Context Protocol (MCP) tools 
   - `billable` (optional, default: true): Whether the task is billable or not
 - **Returns**: Confirmation message with the created entry ID and description
 
-### 5. `mcp_clockify-time-entries_list-time-entries`
+### 5. `mcp_clockify-time-entries_update-time-entry`
+- **Description**: Update an existing time entry in a workspace
+- **Parameters**:
+  - `workspaceId` (required): The ID of the workspace containing the time entry
+  - `entryId` (required): The ID of the time entry to update
+  - `description` (optional): The description of the time entry
+  - `start` (optional): The start time of the time entry (date-time format)
+  - `end` (optional): The end time of the time entry (date-time format)
+  - `projectId` (optional): The ID of the project associated with this time entry
+  - `taskId` (optional): The ID of the task associated with this time entry
+  - `tagIds` (optional): The IDs of tags to associate with this time entry (array of strings)
+  - `billable` (optional): Whether the task is billable or not
+- **Returns**: Confirmation message with the updated entry ID and description
+
+### 6. `mcp_clockify-time-entries_list-time-entries`
 - **Description**: Get registered time entries from a workspace
 - **Parameters**:
   - `workspaceId` (required): The ID of the workspace to search for entries
@@ -44,13 +58,13 @@ This document contains information about the Model Context Protocol (MCP) tools 
   - `project` (optional): Filter entries by project ID
 - **Returns**: List of time entries with ID, description, duration, start and end times
 
-### 6. `mcp_clockify-time-entries_get-tags`
+### 7. `mcp_clockify-time-entries_get-tags`
 - **Description**: Get available tags from a workspace that can be associated with time entries
 - **Parameters**:
   - `workspaceId` (required): The ID of the workspace to get tags from
 - **Returns**: List of tags with their IDs and names
 
-### 7. `mcp_clockify-time-entries_get-tasks`
+### 8. `mcp_clockify-time-entries_get-tasks`
 - **Description**: Get tasks for a project that can be associated with time entries
 - **Parameters**:
   - `workspaceId` (required): The ID of the workspace that contains the project
@@ -82,24 +96,30 @@ const result = await mcp_clockify-time-entries_create-time-entry({
 });
 ```
 
-### Example 2: Getting Time Entries with Project
+### Example 2: Updating a Time Entry
 
 ```javascript
+// First, get available workspaces and find an existing entry
+const workspaces = await mcp_clockify-time-entries_get-workspaces({random_string: "dummy"});
+const workspaceId = workspaces[0].id;
+
 // Get current user
 const user = await mcp_clockify-time-entries_get-current-user({random_string: "dummy"});
 const userId = user.id;
 
-// Get projects in workspace
-const projects = await mcp_clockify-time-entries_get-projects({workspaceId: "workspace123"});
-const projectId = projects[0].id;
-
-// Get time entries for user and project
+// List existing entries to find one to update
 const entries = await mcp_clockify-time-entries_list-time-entries({
-  workspaceId: "workspace123",
-  userId: userId,
-  project: projectId,
-  start: "2023-06-01T00:00:00Z",
-  end: "2023-06-30T23:59:59Z"
+  workspaceId: workspaceId,
+  userId: userId
+});
+const entryId = entries[0].id;
+
+// Update the time entry
+const result = await mcp_clockify-time-entries_update-time-entry({
+  workspaceId: workspaceId,
+  entryId: entryId,
+  description: "Updated documentation work",
+  billable: false
 });
 ```
 

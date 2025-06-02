@@ -5,7 +5,6 @@ This MCP Server integrates with AI Tools to manage your time entries in Clockify
 ## Next implementations
 
 - Delete time entry tool
-- Edit time entry tool
 - Get another user time entries tool
 
 ## Testing
