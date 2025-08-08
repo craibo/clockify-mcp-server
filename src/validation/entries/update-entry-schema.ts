@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const UpdateEntrySchema = z.object({
-  workspaceId: z.string(),
+  workspaceId: z.string().optional(),
   entryId: z.string(),
   billable: z.boolean().optional(),
   description: z.string().optional(),

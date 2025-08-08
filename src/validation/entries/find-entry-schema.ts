@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const FindEntrySchema = z.object({
-  workspaceId: z.string(),
+  workspaceId: z.string().optional(),
   userId: z.string(),
   description: z.string().optional(),
   start: z.coerce.date().optional(),

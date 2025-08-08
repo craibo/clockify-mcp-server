@@ -14,6 +14,23 @@ export const SERVER_CONFIG = {
     "A service that integrates with Clockify API to manage time entries",
 };
 
+// Utility function to resolve workspace ID (use provided or fall back to default)
+export const resolveWorkspaceId = (providedWorkspaceId?: string): string => {
+  if (providedWorkspaceId) {
+    return providedWorkspaceId;
+  }
+
+  const defaultWorkspaceId = process.env.CLOCKIFY_DEFAULT_WORKSPACE_ID;
+  if (!defaultWorkspaceId) {
+    throw new Error(
+      "No workspace ID provided and no default workspace ID configured. " +
+      "Either provide a workspaceId parameter or set CLOCKIFY_DEFAULT_WORKSPACE_ID environment variable."
+    );
+  }
+
+  return defaultWorkspaceId;
+};
+
 export const TOOLS_CONFIG = {
   workspaces: {
     list: {

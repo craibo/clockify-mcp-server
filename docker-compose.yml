@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  clockify-mcp-server:
+    build: .
+    environment:
+      - CLOCKIFY_API_URL=https://api.clockify.me/api/v1
+      - CLOCKIFY_API_TOKEN=${CLOCKIFY_API_TOKEN}
+      - CLOCKIFY_DEFAULT_WORKSPACE_ID=${CLOCKIFY_DEFAULT_WORKSPACE_ID}
+    stdin_open: true
+    tty: true
+    volumes:
+      # Mount source code for development (optional)
+      - ./src:/app/src
+      - ./tsconfig.json:/app/tsconfig.json
+    # No ports needed as MCP communicates via stdio

@@ -1,5 +1,5 @@
 import { tagsService } from "../clockify-sdk/tags";
-import { TOOLS_CONFIG } from "../config/api";
+import { TOOLS_CONFIG, resolveWorkspaceId } from "../config/api";
 import { z } from "zod";
 import { McpResponse, McpToolConfig, TFindTagsSchema } from "../types";
 
@@ -9,17 +9,17 @@ export const findTagsTool: McpToolConfig = {
   parameters: {
     workspaceId: z
       .string()
+      .optional()
       .describe(
-        "The ID of the workspace to get tags from"
+        "The ID of the workspace to get tags from (optional, uses default workspace if not provided)"
       ),
   },
   handler: async ({
     workspaceId,
   }: TFindTagsSchema): Promise<McpResponse> => {
-    if (!workspaceId && typeof workspaceId === "string")
-      throw new Error("Workspace ID required to fetch tags");
+    const resolvedWorkspaceId = resolveWorkspaceId(workspaceId);
 
-    const response = await tagsService.fetchAll(workspaceId as string);
+    const response = await tagsService.fetchAll(resolvedWorkspaceId);
     const tags = response.data.map((tag: any) => ({
       name: tag.name,
       id: tag.id,

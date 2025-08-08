@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { TOOLS_CONFIG } from "../config/api";
+import { TOOLS_CONFIG, resolveWorkspaceId } from "../config/api";
 import { entriesService } from "../clockify-sdk/entries";
 import { McpResponse, McpToolConfig, TCreateEntrySchema, TFindEntrySchema, TUpdateEntrySchema } from "../types";
 
@@ -9,7 +9,8 @@ export const createEntryTool: McpToolConfig = {
   parameters: {
     workspaceId: z
       .string()
-      .describe("The id of the workspace that gonna be saved the time entry"),
+      .optional()
+      .describe("The id of the workspace where the time entry will be saved (optional, uses default workspace if not provided)"),
     billable: z
       .boolean()
       .describe("If the task is billable or not")
@@ -33,7 +34,10 @@ export const createEntryTool: McpToolConfig = {
   },
   handler: async (params: TCreateEntrySchema): Promise<McpResponse> => {
     try {
-      const result = await entriesService.create(params);
+      const resolvedWorkspaceId = resolveWorkspaceId(params.workspaceId);
+      const paramsWithWorkspace = { ...params, workspaceId: resolvedWorkspaceId };
+
+      const result = await entriesService.create(paramsWithWorkspace);
 
       const entryInfo = `Registro inserido com sucesso. ID: ${result.data.id} Nome: ${result.data.description}`;
 
@@ -57,7 +61,8 @@ export const listEntriesTool: McpToolConfig = {
   parameters: {
     workspaceId: z
       .string()
-      .describe("The id of the workspace that gonna search for the entries"),
+      .optional()
+      .describe("The id of the workspace to search for entries (optional, uses default workspace if not provided)"),
     userId: z
       .string()
       .describe(
@@ -82,7 +87,10 @@ export const listEntriesTool: McpToolConfig = {
   },
   handler: async (params: TFindEntrySchema) => {
     try {
-      const result = await entriesService.find(params);
+      const resolvedWorkspaceId = resolveWorkspaceId(params.workspaceId);
+      const paramsWithWorkspace = { ...params, workspaceId: resolvedWorkspaceId };
+
+      const result = await entriesService.find(paramsWithWorkspace);
 
       const formmatedResults = result.data.map((entry: any) => ({
         id: entry.id,
@@ -112,7 +120,8 @@ export const updateEntryTool: McpToolConfig = {
   parameters: {
     workspaceId: z
       .string()
-      .describe("The id of the workspace containing the time entry"),
+      .optional()
+      .describe("The id of the workspace containing the time entry (optional, uses default workspace if not provided)"),
     entryId: z
       .string()
       .describe("The id of the time entry to update"),
@@ -147,11 +156,14 @@ export const updateEntryTool: McpToolConfig = {
   },
   handler: async (params: TUpdateEntrySchema): Promise<McpResponse> => {
     try {
-      if (!params.workspaceId || !params.entryId) {
-        throw new Error("Workspace ID and Entry ID are required to update a time entry");
+      if (!params.entryId) {
+        throw new Error("Entry ID is required to update a time entry");
       }
 
-      const result = await entriesService.update(params);
+      const resolvedWorkspaceId = resolveWorkspaceId(params.workspaceId);
+      const paramsWithWorkspace = { ...params, workspaceId: resolvedWorkspaceId };
+
+      const result = await entriesService.update(paramsWithWorkspace);
 
       const entryInfo = `Registro atualizado com sucesso. ID: ${result.data.id} Nome: ${result.data.description}`;
 

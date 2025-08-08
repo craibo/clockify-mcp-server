@@ -1,5 +1,5 @@
 import { tasksService } from "../clockify-sdk/tasks";
-import { TOOLS_CONFIG } from "../config/api";
+import { TOOLS_CONFIG, resolveWorkspaceId } from "../config/api";
 import { z } from "zod";
 import { McpResponse, McpToolConfig, TFindTasksSchema } from "../types";
 
@@ -9,8 +9,9 @@ export const findTasksTool: McpToolConfig = {
   parameters: {
     workspaceId: z
       .string()
+      .optional()
       .describe(
-        "The ID of the workspace that contains the project"
+        "The ID of the workspace that contains the project (optional, uses default workspace if not provided)"
       ),
     projectId: z
       .string()
@@ -22,10 +23,12 @@ export const findTasksTool: McpToolConfig = {
     workspaceId,
     projectId,
   }: TFindTasksSchema): Promise<McpResponse> => {
-    if (!workspaceId || !projectId)
-      throw new Error("Workspace ID and Project ID are required to fetch tasks");
+    if (!projectId)
+      throw new Error("Project ID is required to fetch tasks");
 
-    const response = await tasksService.fetchByProject(workspaceId, projectId);
+    const resolvedWorkspaceId = resolveWorkspaceId(workspaceId);
+
+    const response = await tasksService.fetchByProject(resolvedWorkspaceId, projectId);
     const tasks = response.data.map((task: any) => ({
       name: task.name,
       id: task.id,

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const CreateEntrySchema = z.object({
-  workspaceId: z.string(),
+  workspaceId: z.string().optional(),
   billable: z.boolean(),
   description: z.string(),
   start: z.coerce.date(),
